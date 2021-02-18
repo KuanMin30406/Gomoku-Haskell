@@ -7,6 +7,9 @@ Gomoku game made with Haskell. The game is very similar to Connect Four but more
 - Add UI to interact with the game
 - Add GUI
 
+# Bug backlog
+- When simple AI makes a move and the board gets printed, the update is delayed (The tile placed will not appear until the next move)
+
 # Extra
 - Add save/load functionality
 - Add player vs computer with a competent AI algorithm
