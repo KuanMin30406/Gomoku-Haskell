@@ -80,7 +80,7 @@ spottostr B = "B"
 
 -- Helper for printing, convert 2d array to list of string
 boardtostr :: [[Tile]] -> [[String]]
-boardtostr (h:t) = map (map spottostr) t
+boardtostr (h:t) = map (map spottostr) (h:t)
 
 -- Helper for printing, print the each row of the board
 printline [] =   
