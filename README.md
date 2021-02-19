@@ -8,12 +8,12 @@ Gomoku game made with Haskell. The game is very similar to Connect Four but more
 
 # Bug backlog
 - (Fixed) ~~When simple AI makes a move and the board gets printed, the update is delayed (The tile placed will not appear until the next move)~~
-- Win function doesn't always declare a win
+- Win function doesn't always declare a win (Kuan)
 
 # Extra
-- Local play
-- Add save/load functionality (Make sure to record whos turn was it and if the game was pvp or pve, black tile is always the player who goes first)
-- Add player vs computer with a competent AI algorithm
+- Local play (Kuan)
+- Add save/load functionality (Make sure to record whos turn was it and if the game was pvp or pve, black tile is always the player who goes first) (Maria)
+- Add player vs computer with a competent AI algorithm (Jason)
 - Add GUI
 - Add networking
 
