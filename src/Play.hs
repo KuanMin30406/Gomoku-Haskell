@@ -54,19 +54,30 @@ person_play game tile (ContinueGame state) opponent =
    do
       let State current avail = state
       printGame current
-      putStrLn ("Choose your move:")
+      putStrLn ("Choose your move (Type S to save, L to load and E to exit):")
       line <- getLine
-      case (readMaybe line :: Maybe Action) of
-        Nothing ->
-           person_play game tile (ContinueGame state) opponent
-        Just action ->
-           if (action `elem` avail)
-             then
-                computer_play game (reverseTile tile) (game tile action state) opponent
-             else
-               do
-                putStrLn "Illegal move: There is already a tile placed in that position"
-                person_play game tile (ContinueGame state) opponent
+      if line == "S"
+        then do
+            putStrLn "Not Supported yet"                    -- TODO add prompt to ask what file name to save as and implement save
+            person_play game tile (ContinueGame state) opponent
+        else if line ==  "L"
+            then do
+                 putStrLn "Not Supported yet"               -- TODO add prompt to ask what file name to load and implement load
+                 person_play game tile (ContinueGame state) opponent
+        else if line == "E"
+            then putStrLn "Thank you for playing!"
+        else 
+            case (readMaybe line :: Maybe Action) of
+                Nothing ->
+                   person_play game tile (ContinueGame state) opponent
+                Just action ->
+                   if (action `elem` avail)
+                     then
+                        computer_play game (reverseTile tile) (game tile action state) opponent
+                     else
+                       do
+                        putStrLn "Illegal move: There is already a tile placed in that position"
+                        person_play game tile (ContinueGame state) opponent
 
 person_play game tile (EndOfGame val (State current avail)) opponent =
    do
