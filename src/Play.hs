@@ -5,6 +5,7 @@ module Play where
 -- :load Play
 
 import Gomoku
+import SaveLoad
 import Text.Read   (readMaybe)
 
 -- Based on the file Play.hs provided in class
@@ -24,7 +25,7 @@ start =
             then putStrLn "Thank you for playing!"
         else start
 
-play = 
+play =
   do
       putStrLn "Who starts? 0=you, 1=computer, 2=exit."
       line <- getLine
@@ -42,7 +43,7 @@ showhelppage =
       putStrLn ""
       putStrLn "How to play:"
       putStrLn "- On each turn the player will place a tile on an empty square in the 15 by 15 game board"
-      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the row and y is the height"
+      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the column and y is the height"
       putStrLn "- (0,0) starts from top-left and (14,14) is at bottom-right"
       putStrLn "- To win the game you need to form an unbroken chain of 5 tiles or more horizontally, vertically, or diagonally"
       putStrLn ""
@@ -67,7 +68,7 @@ person_play game tile (ContinueGame state) opponent multiplayer =
                  person_play game tile (ContinueGame state) opponent multiplayer
         else if line == "E"
             then putStrLn "Thank you for playing!"
-        else 
+        else
             case (readMaybe line :: Maybe Action) of
                 Nothing ->
                    person_play game tile (ContinueGame state) opponent multiplayer
@@ -107,7 +108,7 @@ print_winner _ tile (EndOfGame val state) _ multiplayer
       askplay
   | val == 0 = do
       putStrLn "It's a tie!"
-      askplay 
+      askplay
   | otherwise = do
       if multiplayer then putStrLn (tiletoPlayer (reverseTile tile) ++ " won!")
                      else putStrLn "Computer won!"
