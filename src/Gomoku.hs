@@ -7,14 +7,18 @@ module Gomoku where
 ------- Definitions -------
 
 data Tile = O
-          | W 
-          | B
+          | W                     -- White tile is always second player
+          | B                     -- Black tile is always first player
         deriving (Ord, Eq, Show)
 
 -- Utility function for play
 reverseTile :: Tile -> Tile
 reverseTile B = W
 reverseTile W = B
+
+tiletoPlayer :: Tile -> [Char]
+tiletoPlayer B = "Player 1"
+tiletoPlayer W = "Player 2"
 
 -- Size of the board
 boardHeight :: Int
@@ -95,7 +99,7 @@ printline (h:t) =
 printboard :: [[String]] -> IO ()
 printboard [] =   
   do
-      putStrLn ""
+      putStr ""
 printboard (h:t) =
   do
       printline h
@@ -106,6 +110,7 @@ printboard (h:t) =
 printGame :: [[Tile]] -> IO ()
 printGame brd = 
   do
+      putStrLn ""
       putStrLn "Current Board:"
       printboard (boardtostr brd)
 
@@ -115,9 +120,9 @@ printGame brd =
 gomoku :: Game
 gomoku color (Action (x, y)) (State dlst available) 
     | win color (Action (x, y)) dlst          = EndOfGame 1  new_state   -- agent wins
-    | available == [(Action (x, y))]          = EndOfGame 0  new_state   -- no more moves, tie
+    | available == [Action (x, y)]          = EndOfGame 0  new_state   -- no more moves, tie
     | otherwise                               = ContinueGame new_state
-        where new_state = (State (insert2D color y x dlst) [act | act <- available, act /= (Action (x, y))])
+        where new_state = State (insert2D color y x dlst) [act | act <- available, act /= Action (x, y)]
 
 --             N,      NE,     E,     SE,    S,     SW,     W,      NW
 directions = [(0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)]
