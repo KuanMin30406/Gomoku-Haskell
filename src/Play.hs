@@ -5,7 +5,7 @@ module Play where
 -- :load Play
 
 import Gomoku
-import SaveLoad
+-- import SaveLoad
 import Text.Read   (readMaybe)
 
 -- Based on the file Play.hs provided in class
@@ -60,12 +60,18 @@ person_play game tile (ContinueGame state) opponent multiplayer =
       line <- getLine
       if line == "S"
         then do
-            putStrLn "Not Supported yet"                    -- TODO add prompt to ask what file name to save as and implement save
+            save state multiplayer tile
+            putStrLn "Current game saved"                    -- Could later add prompt to ask what file name to save as
             person_play game tile (ContinueGame state) opponent multiplayer
         else if line ==  "L"
             then do
-                 putStrLn "Not Supported yet"               -- TODO add prompt to ask what file name to load and implement load
-                 person_play game tile (ContinueGame state) opponent multiplayer
+                putStrLn "Loading last-saved game"               -- Could late add prompt to ask what file name to load
+                -- call the load fn and the load fn will call person_play
+
+                --  let state = loadboard
+                --  let (io_multiplayer:io_tile:rst) = loadmeta
+                --  person_play game (strtotile io_tile) (ContinueGame state) opponent (io_multiplayer == "True")
+                load
         else if line == "E"
             then putStrLn "Thank you for playing!"
         else
@@ -123,3 +129,41 @@ askplay =
         else if line ==  "1"
             then putStrLn "Thank you for playing!"
         else askplay
+
+-- Save/Load Utility
+
+
+-- Helper for load that parses a list of actions
+strtoavail :: [String] -> [Action]
+strtoavail [] = []
+strtoavail (h:t) =  case (readMaybe h :: Maybe Action) of
+    Nothing -> strtoavail t
+    Just action -> action : strtoavail t
+
+save :: State -> Bool -> Tile -> IO ()
+save state multiplayer tile = do
+    let State board avail = state
+    let board_file = "Saves/board.txt"
+    let meta_file = "Saves/meta.txt"
+    let avail_file = "Saves/avail.txt"
+    let saved_board = gametostr board
+    writeFile board_file saved_board
+    writeFile meta_file ((show multiplayer) ++ "\n" ++ (show tile))
+    writeFile avail_file (unwords (map show avail))
+
+load = do
+    let board_file = "Saves/board.txt"
+    let meta_file = "Saves/meta.txt"
+    let avail_file = "Saves/avail.txt"
+    board_contents <- readFile board_file
+    meta_contents <- readFile meta_file
+    avail_contents <- readFile avail_file
+    let saved_board = strtoboard (map words (lines board_contents))
+    let (multiplayer:tile:t) = lines meta_contents
+    let avail = strtoavail (words avail_contents)
+    person_play gomoku (strtotile tile) (ContinueGame (State saved_board avail)) simple_player (multiplayer=="True")
+    -- person_play gomoku B (ContinueGame start_state) simple_player True
+-- Call person_play from here with the state (that we create from this board and the availably actions) and these values of multiplayer and tile
+
+
+
