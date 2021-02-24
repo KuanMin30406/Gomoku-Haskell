@@ -5,7 +5,6 @@ module Play where
 -- :load Play
 
 import Gomoku
--- import SaveLoad
 import Text.Read   (readMaybe)
 
 -- Based on the file Play.hs provided in class
@@ -65,12 +64,7 @@ person_play game tile (ContinueGame state) opponent multiplayer =
             person_play game tile (ContinueGame state) opponent multiplayer
         else if line ==  "L"
             then do
-                putStrLn "Loading last-saved game"               -- Could late add prompt to ask what file name to load
-                -- call the load fn and the load fn will call person_play
-
-                --  let state = loadboard
-                --  let (io_multiplayer:io_tile:rst) = loadmeta
-                --  person_play game (strtotile io_tile) (ContinueGame state) opponent (io_multiplayer == "True")
+                putStrLn "Loading last-saved game"               -- Could later add prompt to ask what file name to load
                 load
         else if line == "E"
             then putStrLn "Thank you for playing!"
@@ -132,7 +126,6 @@ askplay =
 
 -- Save/Load Utility
 
-
 -- Helper for load that parses a list of actions
 strtoavail :: [String] -> [Action]
 strtoavail [] = []
@@ -140,6 +133,7 @@ strtoavail (h:t) =  case (readMaybe h :: Maybe Action) of
     Nothing -> strtoavail t
     Just action -> action : strtoavail t
 
+-- Saves the current game to files that can be read later
 save :: State -> Bool -> Tile -> IO ()
 save state multiplayer tile = do
     let State board avail = state
@@ -151,6 +145,7 @@ save state multiplayer tile = do
     writeFile meta_file ((show multiplayer) ++ "\n" ++ (show tile))
     writeFile avail_file (unwords (map show avail))
 
+-- Loads a game that was previously saved 
 load = do
     let board_file = "Saves/board.txt"
     let meta_file = "Saves/meta.txt"
@@ -162,8 +157,6 @@ load = do
     let (multiplayer:tile:t) = lines meta_contents
     let avail = strtoavail (words avail_contents)
     person_play gomoku (strtotile tile) (ContinueGame (State saved_board avail)) simple_player (multiplayer=="True")
-    -- person_play gomoku B (ContinueGame start_state) simple_player True
--- Call person_play from here with the state (that we create from this board and the availably actions) and these values of multiplayer and tile
 
 
 
