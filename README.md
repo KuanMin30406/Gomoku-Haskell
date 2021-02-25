@@ -8,7 +8,7 @@ Gomoku game made with Haskell. The game is very similar to Connect Four but more
 
 # Bug backlog
 - (Fixed) ~~When simple AI makes a move and the board gets printed, the update is delayed (The tile placed will not appear until the next move)~~
-- Win function doesn't always declare a win (Kuan)
+- (Fixed) ~~Win function doesn't always declare a win~~
 
 # Extra
 - Local play (Kuan)
@@ -17,8 +17,6 @@ Gomoku game made with Haskell. The game is very similar to Connect Four but more
   - A solution to think about, AI should keep a priority list to check where to place the tile and play defensively (Greedy): 
   - 4 alive > 4 dead > 3 alive ... > place tile in the current longest chain for AI
   - If the AI moves first, can always start off the game by placing a tile in the middle at (7,7) 
-- Add GUI
-- Add networking
 
 # Development Notes
 - When writing the code try to add a comment on what the code is doing
