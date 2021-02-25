@@ -72,7 +72,7 @@ instance Read Action where
     readsPrec i st =  [(Action a,rst) | (a,rst) <- readsPrec i st]
     
 -- Starting state is empty board and the actions are all possible coordinates in the board
-start_state = State initBoard [Action (x,y) | (x,y) <- [(a,b) | a <- [0..14], b <- [0..14]]]
+start_state = State initBoard generateCoordinates
 
 ------- Print utility -------
 
@@ -119,27 +119,32 @@ printGame brd =
 -- Updates the game and return result 
 gomoku :: Game
 gomoku color (Action (x, y)) (State dlst available) 
-    | win color (Action (x, y)) dlst          = EndOfGame 1  new_state   -- agent wins
-    | available == [Action (x, y)]          = EndOfGame 0  new_state   -- no more moves, tie
+    | win color (insert2D color y x dlst)     = EndOfGame 1  new_state   -- agent wins
+    | available == [Action (x, y)]            = EndOfGame 0  new_state   -- no more moves, tie
     | otherwise                               = ContinueGame new_state
         where new_state = State (insert2D color y x dlst) [act | act <- available, act /= Action (x, y)]
 
 --             N,      NE,     E,     SE,    S,     SW,     W,      NW
 directions = [(0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)]
--- Checks if the selected action results in a win for the game 
--- Need to check if the current selected action will result in 5 tiles of the same color connected in any 8 directions
-win :: Tile -> Action -> [[Tile]] -> Bool
-win color (Action (x, y)) dlst = or [checkconnected color 4 (a, b) (x, y) dlst | (a, b) <- directions]
+-- Checks if the board game has a chain of 5 tiles for the chosen tile
+win :: Tile -> [[Tile]] -> Bool
+win color dlst = or [check8directions color (x,y) dlst | Action (x,y) <- generateCoordinates, samecolor color (x,y) dlst]
+
+-- Check if the there are 4 more tiles of the same colors connected in any 8 directions
+check8directions :: Tile -> (Int, Int) -> [[Tile]] -> Bool
+check8directions color (x, y) dlst = or [checkconnected color 4 (a,b) (x,y) dlst | (a,b) <- directions]
 
 -- Check if the direction specified has n in a row of the same color tile 
 -- a and b will represent the direction we are currently checking
 checkconnected :: Tile -> Int -> (Int, Int) -> (Int, Int) -> [[Tile]] -> Bool
 checkconnected _ 0 _ _ _ = True
-checkconnected color n (a, b) (x, y) dlst = samecolor color (x+a, y+b) dlst && checkconnected color (n-1) (a, b) (x+a, y+b) dlst
+checkconnected color n (a, b) (x, y) dlst = samecolor color (x+a, y+b) dlst && checkconnected color (n-1) (a,b) (x+a, y+b) dlst
 
 -- Checks if the the (x,y) position in the board is the same as color, if (x,y) is out of bounds then false
 samecolor :: Tile -> (Int, Int) -> [[Tile]] -> Bool
 samecolor color (x, y) dlst = x < boardWidth && y < boardHeight && x >= 0 && y >= 0 && ((dlst !! y) !! x) == color
+
+------- Utility Functions -------
 
 -- Two functions taken from https://stackoverflow.com/a/53838631
 -- Insert into a list
@@ -151,6 +156,10 @@ insert1D x' p (x:xs) = x : insert1D x' (p - 1) xs
 insert2D :: a -> Int -> Int -> [[a]] -> [[a]]
 insert2D x'  0 py (r:rs) = insert1D x' py r : rs
 insert2D x' px py (r:rs) = r : insert2D x' (px - 1) py rs
+
+-- Generate all possible coordinates as actions for the grid
+generateCoordinates :: [Action]
+generateCoordinates = [Action (x,y) | (x,y) <- [(a,b) | a <- [0..boardWidth-1], b <- [0..boardHeight-1]]]
 
 ------- Simple AI Player -------
 
