@@ -79,8 +79,6 @@ start_state = State initBoard generateCoordinates
 myunwords :: [String] -> String
 myunwords = foldr (\ x y -> x ++ "  " ++ y) ""
 
--- give ["aa", "bb"] -> "aa  bb"
-
 -- Helper for printing, convert type to character
 spottostr :: Tile -> String 
 spottostr O = "O"
