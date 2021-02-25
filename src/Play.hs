@@ -24,7 +24,7 @@ start =
             then putStrLn "Thank you for playing!"
         else start
 
-play = 
+play =
   do
       putStrLn "Who starts? 0=you, 1=computer, 2=exit."
       line <- getLine
@@ -42,7 +42,7 @@ showhelppage =
       putStrLn ""
       putStrLn "How to play:"
       putStrLn "- On each turn the player will place a tile on an empty square in the 15 by 15 game board"
-      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the row and y is the height"
+      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the column and y is the row"
       putStrLn "- (0,0) starts from top-left and (14,14) is at bottom-right"
       putStrLn "- To win the game you need to form an unbroken chain of 5 tiles or more horizontally, vertically, or diagonally"
       putStrLn ""
@@ -59,15 +59,16 @@ person_play game tile (ContinueGame state) opponent multiplayer =
       line <- getLine
       if line == "S"
         then do
-            putStrLn "Not Supported yet"                    -- TODO add prompt to ask what file name to save as and implement save
+            save state multiplayer tile
+            putStrLn "Current game saved"
             person_play game tile (ContinueGame state) opponent multiplayer
         else if line ==  "L"
             then do
-                 putStrLn "Not Supported yet"               -- TODO add prompt to ask what file name to load and implement load
-                 person_play game tile (ContinueGame state) opponent multiplayer
+                putStrLn "Loading last-saved game"
+                load
         else if line == "E"
             then putStrLn "Thank you for playing!"
-        else 
+        else
             case (readMaybe line :: Maybe Action) of
                 Nothing ->
                    person_play game tile (ContinueGame state) opponent multiplayer
@@ -107,7 +108,7 @@ print_winner _ tile (EndOfGame val state) _ multiplayer
       askplay
   | val == 0 = do
       putStrLn "It's a tie!"
-      askplay 
+      askplay
   | otherwise = do
       if multiplayer then putStrLn (tiletoPlayer (reverseTile tile) ++ " won!")
                      else putStrLn "Computer won!"
@@ -122,3 +123,40 @@ askplay =
         else if line ==  "1"
             then putStrLn "Thank you for playing!"
         else askplay
+
+-- Save/Load Utility
+
+-- Helper for load that parses a list of actions
+strtoavail :: [String] -> [Action]
+strtoavail [] = []
+strtoavail (h:t) =  case (readMaybe h :: Maybe Action) of
+    Nothing -> strtoavail t
+    Just action -> action : strtoavail t
+
+-- Saves the current game to files that can be read later
+save :: State -> Bool -> Tile -> IO ()
+save state multiplayer tile = do
+    let State board avail = state
+    let board_file = "Saves/board.txt"
+    let meta_file = "Saves/meta.txt"
+    let avail_file = "Saves/avail.txt"
+    let saved_board = gametostr board
+    writeFile board_file saved_board
+    writeFile meta_file ((show multiplayer) ++ "\n" ++ (show tile))
+    writeFile avail_file (unwords (map show avail))
+
+-- Loads a game that was previously saved 
+load = do
+    let board_file = "Saves/board.txt"
+    let meta_file = "Saves/meta.txt"
+    let avail_file = "Saves/avail.txt"
+    board_contents <- readFile board_file
+    meta_contents <- readFile meta_file
+    avail_contents <- readFile avail_file
+    let saved_board = strtoboard (map words (lines board_contents))
+    let (multiplayer:tile:t) = lines meta_contents
+    let avail = strtoavail (words avail_contents)
+    person_play gomoku (strtotile tile) (ContinueGame (State saved_board avail)) simple_player (multiplayer=="True")
+
+
+
