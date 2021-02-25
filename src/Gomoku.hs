@@ -75,6 +75,11 @@ instance Read Action where
 start_state = State initBoard [Action (x,y) | (x,y) <- [(a,b) | a <- [0..14], b <- [0..14]]]
 
 ------- Print/Save/Load utility -------
+-- Helper for printing, modifying unwords to add two spaces instead of one
+myunwords :: [String] -> String
+myunwords = foldr (\ x y -> x ++ "  " ++ y) ""
+
+-- give ["aa", "bb"] -> "aa  bb"
 
 -- Helper for printing, convert type to character
 spottostr :: Tile -> String 
@@ -98,7 +103,7 @@ strtoboard lst = map (map strtotile) lst
 
 -- Convert the board to a string that can be printed or written to file
 gametostr :: [[Tile]] -> String
-gametostr board = unlines (map unwords (boardtostr board))
+gametostr board = unlines (map myunwords (boardtostr board))
 
 -- Print the current game
 printGame :: [[Tile]] -> IO ()

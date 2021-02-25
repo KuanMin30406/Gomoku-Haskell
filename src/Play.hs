@@ -42,7 +42,7 @@ showhelppage =
       putStrLn ""
       putStrLn "How to play:"
       putStrLn "- On each turn the player will place a tile on an empty square in the 15 by 15 game board"
-      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the column and y is the height"
+      putStrLn "- To place a tile, you need to type the coordinate in (x,y) format where x is the column and y is the row"
       putStrLn "- (0,0) starts from top-left and (14,14) is at bottom-right"
       putStrLn "- To win the game you need to form an unbroken chain of 5 tiles or more horizontally, vertically, or diagonally"
       putStrLn ""
@@ -60,11 +60,11 @@ person_play game tile (ContinueGame state) opponent multiplayer =
       if line == "S"
         then do
             save state multiplayer tile
-            putStrLn "Current game saved"                    -- Could later add prompt to ask what file name to save as
+            putStrLn "Current game saved"
             person_play game tile (ContinueGame state) opponent multiplayer
         else if line ==  "L"
             then do
-                putStrLn "Loading last-saved game"               -- Could later add prompt to ask what file name to load
+                putStrLn "Loading last-saved game"
                 load
         else if line == "E"
             then putStrLn "Thank you for playing!"
