@@ -109,7 +109,7 @@ printGame brd =
   do
       putStrLn ""
       putStrLn "Current Board:"
-      putStrLn (gametostr brd)
+      putStr (gametostr brd)
 
 ------- Game logic -------
 

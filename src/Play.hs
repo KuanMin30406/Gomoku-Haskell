@@ -6,23 +6,37 @@ module Play where
 
 import Gomoku
 import Text.Read   (readMaybe)
+import Control.DeepSeq
+import Control.Exception
 
 -- Based on the file Play.hs provided in class
 
 start =
   do
       putStrLn "Welcome to the game Gomoku"
-      putStrLn "Multiplayer or play against AI? 0=multiplayer, 1=AI, 2=how to play, 3=exit"
+      putStrLn "0=start game, 1=continue game, 2=how to play, 3=exit"
+      line <- getLine
+      if line == "0"
+        then option
+        else if line ==  "1"
+            then load
+        else if line ==  "2"
+            then showhelppage
+        else if line == "3"
+            then putStrLn "Thank you for playing!"
+        else start    
+
+option =
+  do
+      putStrLn "Multiplayer or play against AI? 0=multiplayer, 1=AI, 2=exit"
       line <- getLine
       if line == "0"
         then person_play gomoku B (ContinueGame start_state) simple_player True
         else if line ==  "1"
             then play
         else if line ==  "2"
-            then showhelppage
-        else if line == "3"
             then putStrLn "Thank you for playing!"
-        else start
+        else option
 
 play =
   do
@@ -153,6 +167,9 @@ load = do
     board_contents <- readFile board_file
     meta_contents <- readFile meta_file
     avail_contents <- readFile avail_file
+    evaluate (force board_contents)
+    evaluate (force meta_contents)
+    evaluate (force avail_contents)
     let saved_board = strtoboard (map words (lines board_contents))
     let (multiplayer:tile:t) = lines meta_contents
     let avail = strtoavail (words avail_contents)
