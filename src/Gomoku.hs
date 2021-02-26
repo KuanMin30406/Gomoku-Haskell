@@ -74,7 +74,10 @@ instance Read Action where
 -- Starting state is empty board and the actions are all possible coordinates in the board
 start_state = State initBoard generateCoordinates
 
-------- Print utility -------
+------- Print/Save/Load utility -------
+-- Helper for printing, modifying unwords to add two spaces instead of one
+myunwords :: [String] -> String
+myunwords = foldr (\ x y -> x ++ "  " ++ y) ""
 
 -- Helper for printing, convert type to character
 spottostr :: Tile -> String 
@@ -86,25 +89,19 @@ spottostr B = "B"
 boardtostr :: [[Tile]] -> [[String]]
 boardtostr (h:t) = map (map spottostr) (h:t)
 
--- Helper for printing, print the each row of the board
-printline [] =   
-  do
-      putStr ""
-printline (h:t) =
-  do
-      putStr (h ++ " ")
-      printline t
+-- Helper for Loading, convert character to type
+strtotile :: String -> Tile
+strtotile "O" = O
+strtotile "B" = B 
+strtotile "W" = W
 
--- Helper for printing, print the board representation in correct format
-printboard :: [[String]] -> IO ()
-printboard [] =   
-  do
-      putStr ""
-printboard (h:t) =
-  do
-      printline h
-      putStrLn ""
-      printboard t
+-- Helper for Loading, convert 2D string array to 2D tile array
+strtoboard :: [[String]] -> [[Tile]]
+strtoboard lst = map (map strtotile) lst
+
+-- Convert the board to a string that can be printed or written to file
+gametostr :: [[Tile]] -> String
+gametostr board = unlines (map myunwords (boardtostr board))
 
 -- Print the current game
 printGame :: [[Tile]] -> IO ()
@@ -112,7 +109,7 @@ printGame brd =
   do
       putStrLn ""
       putStrLn "Current Board:"
-      printboard (boardtostr brd)
+      putStrLn (gametostr brd)
 
 ------- Game logic -------
 
