@@ -1,9 +1,8 @@
-module TestAI where
+module AI where
 
 import Gomoku
 import Data.List
 import Data.Maybe
-
 
 allPos =   [[(x,0) | x <- [0..14]],
             [(x,1) | x <- [0..14]],
@@ -34,8 +33,6 @@ data Dir = NW
 
 -- NOTE: A chain here refers to a sequence of the same tiles in a row with at least one end open i.e. can be futher extended.
 --       A chain being alive means it is open on both ends. 
-
-
 
 aiPlayer :: Tile -> Player
 -- main function for AI player. returns the move the AI will make next
@@ -276,19 +273,7 @@ isAlive tile board avail (x,y) dir count
     | dir == SE                               = legalMove avail (Action(x+count,y+count))
     | otherwise                               = False
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+------- Tests -------
 
 actions = [Action (x,y) | (x,y) <- [(a,b) | a <- [0..14], b <- [0..14], not (a == 2 && b == 3)]]
 

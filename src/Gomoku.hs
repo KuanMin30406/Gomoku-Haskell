@@ -75,25 +75,26 @@ instance Read Action where
 start_state = State initBoard generateCoordinates
 
 ------- Print/Save/Load utility -------
+
 -- Helper for printing, modifying unwords to add two spaces instead of one
 myunwords :: [String] -> String
 myunwords = foldr (\ x y -> x ++ "  " ++ y) ""
 
 -- Helper for printing, convert type to character
-spottostr :: Tile -> String 
-spottostr O = "O"
-spottostr W = "W"
-spottostr B = "B"
-
--- Helper for printing, convert 2d array to list of string
-boardtostr :: [[Tile]] -> [[String]]
-boardtostr (h:t) = map (map spottostr) (h:t)
+tiletostr :: Tile -> String 
+tiletostr O = "O"
+tiletostr W = "W"
+tiletostr B = "B"
 
 -- Helper for Loading, convert character to type
 strtotile :: String -> Tile
 strtotile "O" = O
 strtotile "B" = B 
 strtotile "W" = W
+
+-- Helper for printing, convert 2d array to list of string
+boardtostr :: [[Tile]] -> [[String]]
+boardtostr lst = map (map tiletostr) lst
 
 -- Helper for Loading, convert 2D string array to 2D tile array
 strtoboard :: [[String]] -> [[Tile]]
@@ -102,10 +103,10 @@ strtoboard lst = map (map strtotile) lst
 -- Convert the board to a string that can be printed or written to file
 gametostr :: [[Tile]] -> String
 gametostr board = unlines (map myunwords (boardtostr board))
+
 -- Helper for printing, print the each row of the board
 printline [] rownum =   
   do
-      --putStr ""
       putStr (show rownum) 
 printline (h:t) rownum =
   do

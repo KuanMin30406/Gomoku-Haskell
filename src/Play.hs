@@ -5,13 +5,11 @@ module Play where
 -- :load Play
 
 import Gomoku
-import Text.Read   (readMaybe)
+import AI
 
+import Text.Read   (readMaybe)
 import Control.DeepSeq
 import Control.Exception
-
-import TestAI
-
 
 -- Based on the file Play.hs provided in class
 
