@@ -6,8 +6,12 @@ module Play where
 
 import Gomoku
 import Text.Read   (readMaybe)
+
 import Control.DeepSeq
 import Control.Exception
+
+import TestAI
+
 
 -- Based on the file Play.hs provided in class
 
@@ -31,7 +35,7 @@ option =
       putStrLn "Multiplayer or play against AI? 0=multiplayer, 1=AI, 2=exit"
       line <- getLine
       if line == "0"
-        then person_play gomoku B (ContinueGame start_state) simple_player True
+        then personPlay gomoku B (ContinueGame start_state) aiPlayer True
         else if line ==  "1"
             then play
         else if line ==  "2"
@@ -44,9 +48,9 @@ play =
       line <- getLine
       if line == "0"
         then
-            person_play gomoku B (ContinueGame start_state) simple_player False
+            personPlay gomoku B (ContinueGame start_state) aiPlayer False
         else if line ==  "1"
-            then computer_play gomoku B (ContinueGame start_state) simple_player
+            then computerPlay gomoku B (ContinueGame start_state) aiPlayer
         else if line == "2"
             then putStrLn "Thank you for playing!"
         else play
@@ -62,9 +66,9 @@ showhelppage =
       putStrLn ""
       start
 
-person_play :: Game -> Tile -> Result -> Player -> Bool -> IO ()
+personPlay :: Game -> Tile -> Result -> (Tile -> Player) -> Bool -> IO ()
 -- opponent has played, the person must now play
-person_play game tile (ContinueGame state) opponent multiplayer =
+personPlay game tile (ContinueGame state) opponent multiplayer =
    do
       let State current avail = state
       printGame current
@@ -75,7 +79,7 @@ person_play game tile (ContinueGame state) opponent multiplayer =
         then do
             save state multiplayer tile
             putStrLn "Current game saved"
-            person_play game tile (ContinueGame state) opponent multiplayer
+            personPlay game tile (ContinueGame state) opponent multiplayer
         else if line ==  "L"
             then do
                 putStrLn "Loading last-saved game"
@@ -85,38 +89,38 @@ person_play game tile (ContinueGame state) opponent multiplayer =
         else
             case (readMaybe line :: Maybe Action) of
                 Nothing ->
-                   person_play game tile (ContinueGame state) opponent multiplayer
+                   personPlay game tile (ContinueGame state) opponent multiplayer
                 Just action ->
                    if action `elem` avail
                      then
-                       if multiplayer then person_play game (reverseTile tile) (game tile action state) opponent multiplayer
-                                      else computer_play game (reverseTile tile) (game tile action state) opponent
+                       if multiplayer then personPlay game (reverseTile tile) (game tile action state) opponent multiplayer
+                                      else computerPlay game (reverseTile tile) (game tile action state) opponent
                      else
                        do
                         putStrLn "Illegal move: There is already a tile placed in that position"
-                        person_play game tile (ContinueGame state) opponent multiplayer
+                        personPlay game tile (ContinueGame state) opponent multiplayer
 
-person_play game tile (EndOfGame val (State current avail)) opponent multiplayer =
+personPlay game tile (EndOfGame val (State current avail)) opponent multiplayer =
    do
       printGame current
-      print_winner game tile (EndOfGame (-val) (State current avail)) opponent multiplayer
+      printWinner game tile (EndOfGame (-val) (State current avail)) opponent multiplayer
 
-computer_play :: Game -> Tile -> Result -> Player -> IO ()
+computerPlay :: Game -> Tile -> Result -> (Tile -> Player) -> IO ()
 -- person has played, the computer must now play
-computer_play game tile (EndOfGame val (State current avail)) opponent =
+computerPlay game tile (EndOfGame val (State current avail)) opponent =
    do
       printGame current
-      print_winner game tile (EndOfGame val (State current avail)) opponent False
+      printWinner game tile (EndOfGame val (State current avail)) opponent False
 
-computer_play game tile (ContinueGame state) opponent =
+computerPlay game tile (ContinueGame state) opponent =
    do
       let State current avail = state
-      let opponent_move = opponent state
+      let opponent_move = opponent tile state
       printGame current
       putStrLn ("The computer chose "++show opponent_move)
-      person_play game (reverseTile tile) (game tile opponent_move state) opponent False
+      personPlay game (reverseTile tile) (game tile opponent_move state) opponent False
 
-print_winner _ tile (EndOfGame val state) _ multiplayer
+printWinner _ tile (EndOfGame val state) _ multiplayer
   | val > 0 = do
       putStrLn "You won!"
       askplay
@@ -173,7 +177,7 @@ load = do
     let saved_board = strtoboard (map words (lines board_contents))
     let (multiplayer:tile:t) = lines meta_contents
     let avail = strtoavail (words avail_contents)
-    person_play gomoku (strtotile tile) (ContinueGame (State saved_board avail)) simple_player (multiplayer=="True")
+    personPlay gomoku (strtotile tile) (ContinueGame (State saved_board avail)) aiPlayer (multiplayer=="True")
 
 
 

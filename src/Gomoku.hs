@@ -102,6 +102,26 @@ strtoboard lst = map (map strtotile) lst
 -- Convert the board to a string that can be printed or written to file
 gametostr :: [[Tile]] -> String
 gametostr board = unlines (map myunwords (boardtostr board))
+-- Helper for printing, print the each row of the board
+printline [] rownum =   
+  do
+      --putStr ""
+      putStr (show rownum) 
+printline (h:t) rownum =
+  do
+      putStr (h ++ "  ")
+      printline t rownum
+
+-- Helper for printing, print the board representation in correct format
+printboard :: [[String]] -> Int -> IO ()
+printboard [] rownum =   
+  do
+      putStr ""
+printboard (h:t) rownum =
+  do
+      printline h rownum
+      putStrLn ""
+      printboard t (rownum+1)
 
 -- Print the current game
 printGame :: [[Tile]] -> IO ()
@@ -109,7 +129,8 @@ printGame brd =
   do
       putStrLn ""
       putStrLn "Current Board:"
-      putStr (gametostr brd)
+      putStrLn "0  1  2  3  4  5  6  7  8  9 10 11 12 13 14"
+      printboard (boardtostr brd) 0
 
 ------- Game logic -------
 
@@ -161,6 +182,6 @@ generateCoordinates = [Action (x,y) | (x,y) <- [(a,b) | a <- [0..boardWidth-1], 
 ------- Simple AI Player -------
 
 -- Really bad AI, just choose the first coordinate available
-simple_player :: Player
-simple_player (State _ avail) = head avail
+simplePlayer :: Player
+simplePlayer (State _ avail) = head avail
 
