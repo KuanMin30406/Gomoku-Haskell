@@ -311,3 +311,21 @@ testboard2 = [[O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
               [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
               [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]] 
 actions2 = [Action (x,y) | (x,y) <- [(a,b) | a <- [0..14], b <- [0..14], not ((a == 5 && b == 2) || (a == 4 && b == 3) || (a == 5 && b == 3) || (a == 5 && b == 4))]]
+
+testboard3 = [[O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, B, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, B, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, B, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, W, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, B, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, B, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, B, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+              [O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]] 
+actions3 = [Action (x,y) | (x,y) <- [(a,b) | a <- [0..14], b <- [0..14], not ((a == 3 && b == 2) || (a == 4 && b == 3) || (a == 5 && b == 4) || (a == 6 && b == 5) ||  (a == 7 && b == 9) ||  (a == 8 && b == 10) ||  (a == 9 && b == 11))]]
+test3 = aiPlayer B (State testboard3 actions3)
