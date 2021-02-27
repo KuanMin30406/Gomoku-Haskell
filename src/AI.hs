@@ -157,7 +157,7 @@ chainNW tile board avail (x,y) =
             do  
                 let dir = NW
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (NW, 0, False)
         else (NW, 0, False)
 
 chainTN :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -167,7 +167,7 @@ chainTN tile board avail (x,y) =
             do  
                 let dir = TN
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (TN, 0, False)
         else (TN, 0, False)
 
 chainNE :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -177,7 +177,7 @@ chainNE tile board avail (x,y) =
             do  
                 let dir = NE
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (NE, 0, False)
         else (NE, 0, False)
 
 chainTW :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -187,7 +187,7 @@ chainTW tile board avail (x,y) =
             do  
                 let dir = TW
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (TW, 0, False)
         else (TW, 0, False)
 
 chainTE :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -197,7 +197,7 @@ chainTE tile board avail (x,y) =
             do  
                 let dir = TE
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (TE, 0, False)
         else (TE, 0, False)
 
 chainSW :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -207,7 +207,7 @@ chainSW tile board avail (x,y) =
             do  
                 let dir = SW
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (SW, 0, False)
         else (SW, 0, False)
 
 chainTS :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -217,7 +217,7 @@ chainTS tile board avail (x,y) =
             do  
                 let dir = TS
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (TS, 0, False)
         else (TS, 0, False)
 
 chainSE :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> (Dir, Int, Bool)
@@ -227,7 +227,7 @@ chainSE tile board avail (x,y) =
             do  
                 let dir = SE
                 let count = countChain tile board (x,y) dir 0
-                (dir, count, isAlive tile board avail (x,y) dir count)
+                if count > 0 then (dir, count, isAlive tile board avail (x,y) dir count) else (SE, 0, False)
         else (SE, 0, False)
 
 
@@ -262,15 +262,25 @@ maxChain lst =
 
 isAlive :: Tile -> [[Tile]] -> [Action] -> (Int, Int) -> Dir -> Int -> Bool 
 -- check whether a chain is alive
+-- isAlive tile board avail (x,y) dir count
+--     | dir == NW                               = legalMove avail (Action(x-count,y-count))
+--     | dir == TN                               = legalMove avail (Action(x,y-count))
+--     | dir == NE                               = legalMove avail (Action(x+count,y-count))
+--     | dir == TW                               = legalMove avail (Action(x-count,y))
+--     | dir == TE                               = legalMove avail (Action(x+count,y))
+--     | dir == SW                               = legalMove avail (Action(x-count,y+count))
+--     | dir == TS                               = legalMove avail (Action(x,y+count))
+--     | dir == SE                               = legalMove avail (Action(x+count,y+count))
+--     | otherwise                               = False
 isAlive tile board avail (x,y) dir count
-    | dir == NW                               = legalMove avail (Action(x-count,y-count))
-    | dir == TN                               = legalMove avail (Action(x,y-count))
-    | dir == NE                               = legalMove avail (Action(x+count,y-count))
-    | dir == TW                               = legalMove avail (Action(x-count,y))
-    | dir == TE                               = legalMove avail (Action(x+count,y))
-    | dir == SW                               = legalMove avail (Action(x-count,y+count))
-    | dir == TS                               = legalMove avail (Action(x,y+count))
-    | dir == SE                               = legalMove avail (Action(x+count,y+count))
+    | dir == NW                               = legalMove avail (Action(x+1,y+1))
+    | dir == TN                               = legalMove avail (Action(x,y+1))
+    | dir == NE                               = legalMove avail (Action(x-1,y+1))
+    | dir == TW                               = legalMove avail (Action(x+1,y))
+    | dir == TE                               = legalMove avail (Action(x-1,y))
+    | dir == SW                               = legalMove avail (Action(x+1,y-1))
+    | dir == TS                               = legalMove avail (Action(x,y-1))
+    | dir == SE                               = legalMove avail (Action(x-1,y-1))
     | otherwise                               = False
 
 ------- Tests -------
