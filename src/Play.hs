@@ -13,6 +13,7 @@ import Control.Exception
 
 -- Based on the file Play.hs provided in class
 
+-- Start the game
 start =
   do
       putStrLn "Welcome to the game Gomoku"
@@ -28,6 +29,7 @@ start =
             then putStrLn "Thank you for playing!"
         else start    
 
+-- Choose local play or vs AI
 option =
   do
       putStrLn "Multiplayer or play against AI? 0=multiplayer, 1=AI, 2=exit"
@@ -40,6 +42,7 @@ option =
             then putStrLn "Thank you for playing!"
         else option
 
+-- Ask who starts in player vs AI
 play =
   do
       putStrLn "Who starts? 0=you, 1=computer, 2=exit."
@@ -53,6 +56,7 @@ play =
             then putStrLn "Thank you for playing!"
         else play
 
+-- Show game rules
 showhelppage =
     do
       putStrLn ""
@@ -64,8 +68,8 @@ showhelppage =
       putStrLn ""
       start
 
+-- Function to be called when its the player's turn to play
 personPlay :: Game -> Tile -> Result -> (Tile -> Player) -> Bool -> IO ()
--- opponent has played, the person must now play
 personPlay game tile (ContinueGame state) opponent multiplayer =
    do
       let State current avail = state
@@ -95,7 +99,7 @@ personPlay game tile (ContinueGame state) opponent multiplayer =
                                       else computerPlay game (reverseTile tile) (game tile action state) opponent
                      else
                        do
-                        putStrLn "Illegal move: There is already a tile placed in that position"
+                        putStrLn "Illegal move: There is already a tile placed in that position or it's not in the board"
                         personPlay game tile (ContinueGame state) opponent multiplayer
 
 personPlay game tile (EndOfGame val (State current avail)) opponent multiplayer =
@@ -103,8 +107,8 @@ personPlay game tile (EndOfGame val (State current avail)) opponent multiplayer 
       printGame current
       printWinner game tile (EndOfGame (-val) (State current avail)) opponent multiplayer
 
+-- Function to be called when its the computer's turn to play
 computerPlay :: Game -> Tile -> Result -> (Tile -> Player) -> IO ()
--- person has played, the computer must now play
 computerPlay game tile (EndOfGame val (State current avail)) opponent =
    do
       printGame current
@@ -118,6 +122,7 @@ computerPlay game tile (ContinueGame state) opponent =
       putStrLn ("The computer chose "++show opponent_move)
       personPlay game (reverseTile tile) (game tile opponent_move state) opponent False
 
+-- Announce the winner of the game
 printWinner _ tile (EndOfGame val state) _ multiplayer
   | val > 0 = do
       putStrLn "You won!"
@@ -130,6 +135,7 @@ printWinner _ tile (EndOfGame val state) _ multiplayer
                      else putStrLn "Computer won!"
       askplay
 
+-- Ask to play again or not (exit)
 askplay =
   do
       putStrLn "Play again? 0=yes, 1=no"
